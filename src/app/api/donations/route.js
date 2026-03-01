@@ -13,12 +13,16 @@ export async function POST(request) {
       )
     }
 
+    const reference = `DI${Date.now().toString().slice(-8)}${Math.random().toString(36).slice(-4).toUpperCase()}`
+
+    if (!prisma) {
+      return NextResponse.json({ success: true, reference })
+    }
+
     let cause = null
     if (causeSlug) {
       cause = await prisma.cause.findUnique({ where: { slug: causeSlug } })
     }
-
-    const reference = `HF${Date.now().toString().slice(-8)}${Math.random().toString(36).slice(-4).toUpperCase()}`
 
     const result = await prisma.$transaction(async (tx) => {
       const donor = await tx.donor.create({
