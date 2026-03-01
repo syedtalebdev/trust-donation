@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Cause {
+  id          Int        @id @default(autoincrement())
+  slug        String     @unique
+  title       String
+  category    String
+  icon        String
+  description String
+  longDesc    String
+  raised      Float      @default(0)
+  goal        Float
+  supporters  Int        @default(0)
+  urgency     String
+  endDate     String
+  donations   Donation[]
+}
+
+model Donor {
+  id        Int        @id @default(autoincrement())
+  name      String
+  email     String
+  phone     String?
+  pan       String?
+  createdAt DateTime   @default(now())
+  donations Donation[]
+}
+
+model Donation {
+  id            Int      @id @default(autoincrement())
+  causeId       Int?
+  donorId       Int
+  amount        Float
+  isMonthly     Boolean  @default(false)
+  paymentMethod String
+  reference     String   @unique
+  createdAt     DateTime @default(now())
+  cause         Cause?   @relation(fields: [causeId], references: [id])
+  donor         Donor    @relation(fields: [donorId], references: [id])
+}
